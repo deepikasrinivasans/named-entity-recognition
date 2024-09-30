@@ -37,7 +37,7 @@ from keras import layers
 from keras.models import Model
 
 data = pd.read_csv("ner_dataset.csv", encoding="latin1")
-data.head(15)
+data.head(50)
 
 data = data.fillna(method="ffill")
 data.head(50)
@@ -47,11 +47,15 @@ print("Unique tags in corpus:", data['Tag'].nunique())
 
 words=list(data['Word'].unique())
 words.append("ENDPAD")
-num_words = len(words)
 tags=list(data['Tag'].unique())
-num_tags = len(tags)
 
 print("Unique tags are:", tags)
+
+num_words = len(words)
+num_tags = len(tags)
+
+num_words
+
 
 class SentenceGetter(object):
     def __init__(self, data):
@@ -74,16 +78,30 @@ class SentenceGetter(object):
 
 getter = SentenceGetter(data)
 sentences = getter.sentences
+
 len(sentences)
+
+sentences[0]
 
 word2idx = {w: i + 1 for i, w in enumerate(words)}
 tag2idx = {t: i for i, t in enumerate(tags)}
+
+word2idx
+
+plt.hist([len(s) for s in sentences], bins=50)
+plt.show()
+
 X1 = [[word2idx[w[0]] for w in s] for s in sentences]
+type(X1[0])
+X1[0]
 
 max_len = 100
 X = sequence.pad_sequences(maxlen=max_len,
                   sequences=X1, padding="post",
                   value=num_words-1)
+
+X[0]
+
 
 y1 = [[tag2idx[w[2]] for w in s] for s in sentences]
 
@@ -95,6 +113,8 @@ y = sequence.pad_sequences(maxlen=max_len,
 X_train, X_test, y_train, y_test = train_test_split(X, y,
                                                     test_size=0.2, random_state=1)
 
+X_train[0]
+y_train[0]
 input_word = layers.Input(shape=(max_len,))
 
 embedding_layer = layers.Embedding(input_dim=num_words,output_dim=50,
@@ -109,9 +129,11 @@ bidirection_lstm = layers.Bidirectional(
 output = layers.TimeDistributed(
     layers.Dense(num_tags,activation="softmax"))(bidirection_lstm)
 
-model = Model(input_word, output)  
+model = Model(input_word, output)
 
+print('Name: Deepika S                Register Number: 212222230028      ')
 model.summary()
+
 
 model.compile(optimizer="adam",
               loss="sparse_categorical_crossentropy",
@@ -128,7 +150,10 @@ history = model.fit(
 metrics = pd.DataFrame(model.history.history)
 metrics.head()
 
+print('Name: Deepika S               Register Number:212222230028      ')
 metrics[['accuracy','val_accuracy']].plot()
+
+print('Name: Deepika S                Register Number: 212222230028')
 metrics[['loss','val_loss']].plot()
 
 i = 14
