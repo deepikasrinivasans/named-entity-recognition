@@ -143,8 +143,8 @@ history = model.fit(
     x=X_train,
     y=y_train,
     validation_data=(X_test,y_test),
-    batch_size=30, 
-    epochs=10,
+    batch_size=32, 
+    epochs=3,
 )
 
 metrics = pd.DataFrame(model.history.history)
